@@ -25,11 +25,14 @@ Snake::~Snake()
             p = nextNode;
     }
     */
-    for (SnakeNode* p = tail; p != nullptr; ) {
+    for (SnakeNode* p = tail; p != nullptr;)
+    {
         SnakeNode* nextNode = p->next;
         delete p;
         p = nextNode;
-   }
+    }
+
+
 }
 
 // DO NOT CHANGE METHOD
@@ -59,8 +62,9 @@ void Snake::growAtFront(Position newPosition)
     // head of snake grow at new position
 
     /* YOUR CODE HERE */
-    head->next = new SnakeNode(newPosition, nullptr);
-    head = head->next;
+    SnakeNode* newHead = new SnakeNode(newPosition, nullptr);
+    head->next = newHead;
+    head = newHead;
 }
 
 
@@ -91,20 +95,24 @@ void Snake::slideTo(Position newPosition)
 	if (tail->next == nullptr) {
         // position is assigned by new position.
 		/* YOUR CODE HERE */
-		tail->position = newPosition;
+        SnakeNode* newN = new SnakeNode(newPosition);
+        tail = newN;
+        head = newN;
 	}
 	else {
 		SnakeNode *oldTailNode = tail;
 		//cut the old tail off the snake
         /* YOUR CODE HERE */
-        tail = tail->next;
-        oldTailNode->next = nullptr;
 
 		// move it to the head of the snake
         /* YOUR CODE HERE */
-        oldTailNode->position = newPosition;
-		head = oldTailNode;
-        head = head->next;
+        SnakeNode* newN = tail->next;
+        tail = newN;
+        SnakeNode* newH = new SnakeNode(newPosition);
+        head->next = newH;
+        head = newH;
+
+
 	}
 }
 
@@ -123,7 +131,7 @@ void Snake::slideTo(Position newPosition)
 void Snake::eatCherry()
 {
 	/* YOUR CODE HERE */
-	cherry++;
+    cherry++;
 }
 
 /***
@@ -157,11 +165,13 @@ void Snake::move(Direction direction)
     Position newPosition = head->position.move(direction);
 
     /* YOUR CODE HERE */
-    if (game.getGameStatus() == GAME_OVER) return;
-
+    game.snakeMoveTo(newPosition);
     // If gameOver, return ;
     /* YOUR CODE HERE */
-
+    if (game.isGameOver())
+    {
+        return;
+    }
     // If cherry > 0, cherry descrease one and growAtFront() with newPosition
     if (cherry > 0) {
         /* YOUR CODE HERE */
