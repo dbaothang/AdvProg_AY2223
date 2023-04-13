@@ -12,6 +12,7 @@ int random(int l, int r)
 
 /***
     Args: color (SDL_Color): color value
+
     Returns:
         None
 ***/
@@ -24,6 +25,7 @@ void Painter::setColor(SDL_Color color)
 
 /***
     Args: numPixel (int): number of pixel for jumping forward
+
     Returns:
         None
 ***/
@@ -36,6 +38,7 @@ void Painter::jumpForward(int numPixel)
 
 /***
     Args: numPixel (int): number of pixel for jumping backward
+
     Returns:
         None
 ***/
@@ -48,6 +51,7 @@ void Painter::jumpBackward(int numPixel)
 
 /***
     Args: degree (double): the value of rotation angle
+
     Returns:
         None
 ***/
@@ -60,6 +64,7 @@ void Painter::turnLeft(double degree)
 
 /***
     Args: degree (double): the value of rotation angle
+
     Returns:
         None
 ***/
