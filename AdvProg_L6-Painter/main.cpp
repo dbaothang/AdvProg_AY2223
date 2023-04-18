@@ -1,10 +1,14 @@
 #include <iostream>
 #include <ctime>
 
+#if __linux__
+    #include <SDL2/SDL.h>
+#else
 //Mac
 #include <SDL.h>
 // //Windows
 // #include <SDL.h>
+#endif // __linux__
 
 #include "painter.h"
 #include "utils.h"
