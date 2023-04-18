@@ -1,14 +1,4 @@
 #include "painter.h"
-#include <random>
-#include <chrono>
-using namespace std;
-
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-
-int random(int l, int r)
-{
-    return rng() % (r - l + 1) + l;
-}
 
 /***
     Args: color (SDL_Color): color value
@@ -23,18 +13,21 @@ void Painter::setColor(SDL_Color color)
     SDL_SetRenderDrawColor(this->renderer, color.r, color.g, color.b, color.a);
 }
 
+
 /***
     Args: numPixel (int): number of pixel for jumping forward
 
     Returns:
         None
 ***/
+constexpr float to_rad = M_PI / 180.0f;
 void Painter::jumpForward(int numPixel)
 {
     // TODO: jump the painter forward
-    this->x += numPixel * cos(angle / 180 * M_PI);
-    this->y -= numPixel * sin(angle / 180 * M_PI);
+    x += cos(this->angle * to_rad) * numPixel;
+    y -= sin(this->angle * to_rad) * numPixel;
 }
+
 
 /***
     Args: numPixel (int): number of pixel for jumping backward
@@ -45,9 +38,9 @@ void Painter::jumpForward(int numPixel)
 void Painter::jumpBackward(int numPixel)
 {
     // TODO: jump the painter backward
-    this->x -= numPixel * cos(angle / 180 * M_PI);
-    this->y += numPixel * sin(angle / 180 * M_PI);
+    Painter::jumpForward(-numPixel);
 }
+
 
 /***
     Args: degree (double): the value of rotation angle
@@ -55,12 +48,15 @@ void Painter::jumpBackward(int numPixel)
     Returns:
         None
 ***/
+
+
 void Painter::turnLeft(double degree)
 {
     // TODO: rotate left the painter
     angle += degree;
-    angle = fmod(this->angle, 360);
+    angle -= static_cast<float>(static_cast<int>(angle / 360.0f)) * 360.0f;
 }
+
 
 /***
     Args: degree (double): the value of rotation angle
@@ -71,8 +67,7 @@ void Painter::turnLeft(double degree)
 void Painter::turnRight(double degree)
 {
     // TODO: rotate right the painter
-    this->angle -= degree;
-    angle = fmod(this->angle, 360);
+    turnLeft(-degree);
 }
 
 /***
@@ -81,13 +76,24 @@ void Painter::turnRight(double degree)
     Returns:
         None
 ***/
-
+const SDL_Color col_array[10] = {
+    CYAN_COLOR,
+    BLUE_COLOR,
+    ORANGE_COLOR,
+    YELLOW_COLOR,
+    LIME_COLOR,
+    PURPLE_COLOR,
+    RED_COLOR,
+    WHITE_COLOR,
+    BLACK_COLOR,
+    GREEN_COLOR
+};
 void Painter::randomColor()
 {
     // TODO: set random color
-    vector<SDL_Color> colorList = {CYAN_COLOR, BLUE_COLOR, ORANGE_COLOR, YELLOW_COLOR, LIME_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, BLACK_COLOR, GREEN_COLOR};
-    this->color = colorList[random(0, (int)colorList.size() - 1)];
+    this->setColor(col_array[rand() % 10]);
 }
+
 
 /***
 Part of code that not need to be implemented
@@ -96,31 +102,30 @@ void Painter::clearWithBgColor(SDL_Color bgColor)
 {
     SDL_Color curColor = color;
     setColor(bgColor);
-    SDL_RenderClear(renderer);
+	SDL_RenderClear(renderer);
     setColor(curColor);
 }
 
-Painter::Painter(SDL_Window *window, SDL_Renderer *renderer)
+
+Painter::Painter(SDL_Window* window, SDL_Renderer *renderer)
 {
     SDL_RenderGetLogicalSize(renderer, &width, &height);
-    if (width == 0 && height == 0)
-    {
+    if (width == 0 && height == 0) {
         SDL_GetWindowSize(window, &width, &height);
     }
     this->renderer = renderer;
-    setPosition(width / 2, height / 2);
+    setPosition(width/2, height/2);
     setAngle(0);
     setColor(WHITE_COLOR);
     clearWithBgColor(BLUE_COLOR);
 }
 
+
 void Painter::createCircle(int radius)
 {
     double rad = (angle / 180) * M_PI;
-    int centerX = x + (int)(cos(rad) * (double)radius);
-    ;
-    int centerY = y - (int)(sin(rad) * (double)radius);
-    ;
+    int centerX = x + (int) (cos(rad) * (double) radius);;
+    int centerY = y - (int) (sin(rad) * (double) radius);;
 
     int dx = radius;
     int dy = 0;
@@ -140,20 +145,21 @@ void Painter::createCircle(int radius)
         if (err <= 0)
         {
             dy += 1;
-            err += 2 * dy + 1;
+            err += 2*dy + 1;
         }
         if (err > 0)
         {
             dx -= 1;
-            err -= 2 * dx + 1;
+            err -= 2*dx + 1;
         }
     }
 }
 
+
+
 void Painter::createParallelogram(int size)
 {
-    for (int i = 0; i < 2; ++i)
-    {
+	for (int i = 0; i < 2; ++i) {
         moveForward(size);
         turnLeft(60);
         moveForward(size);
@@ -161,14 +167,16 @@ void Painter::createParallelogram(int size)
     }
 }
 
+
+
 void Painter::createSquare(int size)
 {
-    for (int i = 0; i < 4; ++i)
-    {
+	for (int i = 0; i < 4; ++i) {
         moveForward(size);
-        turnLeft(90);
+	    turnLeft(90);
     }
 }
+
 
 void Painter::moveForward(int numPixel)
 {
@@ -176,6 +184,7 @@ void Painter::moveForward(int numPixel)
     jumpForward(numPixel);
     SDL_RenderDrawLine(renderer, preX, preY, x, y);
 }
+
 
 void Painter::moveBackward(int numPixel)
 {
